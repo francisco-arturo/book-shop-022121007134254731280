@@ -7,8 +7,7 @@ public-domain classics with public-domain cover images.
 - **Live URL:** https://book-shop-022121007134254731280.vercel.app
 - **Local review:** [http://127.0.0.1:4197](http://127.0.0.1:4197)
 - **Run it:** `node dev-server.mjs` from this directory
-- **Deploy after review:** `node .harness/deploy.mjs book-shop-022121007134254731280` from the
-  workspace root
+- **Redeploy:** `node .harness/deploy.mjs book-shop-022121007134254731280` from the workspace root
 - **Deployment:** `dpl_8GJUdnQEpfaSKtktT1HzzxY1JBaR`, READY in 5s
 - **Last verified:** 2026-11-13
 
@@ -16,7 +15,7 @@ public-domain classics with public-domain cover images.
 
 | # | Do this | What you should see |
 |---|---|---|
-| 1 | Open the local URL | A seeded shopfront with 14 classics, the 1925 *Great Gatsby* cover on the front table, live stock badges and a working bag. No login. |
+| 1 | Open the live URL | A seeded shopfront with 14 classics, the 1925 *Great Gatsby* cover on the front table, live stock badges and a working bag. No login. |
 | 2 | Add **Pride and Prejudice** (in stock) and **Jane Eyre** (supplier) | Badge count moves to 2. The cards show the shelf copies separately from supplier copies. |
 | 3 | Open **Bag** | Two route notes: one from the shelf, one from Bookazine. Choose pickup or shipping and place the demo order. |
 | 4 | Read the confirmation | Order `FS-1043` shows one copy pulled today from the shelf and one supplier copy with an estimated date. |
