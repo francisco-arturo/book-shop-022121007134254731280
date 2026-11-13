@@ -4,11 +4,12 @@ A working bookstore prototype built from the Upwork brief for an online bookstor
 engine, ISBN scanner, catalog importer, and order router. The shelf now carries fourteen
 public-domain classics with public-domain cover images.
 
-- **Live URL:** pending. Push and deploy follow the local review.
+- **Live URL:** https://book-shop-022121007134254731280.vercel.app
 - **Local review:** [http://127.0.0.1:4197](http://127.0.0.1:4197)
 - **Run it:** `node dev-server.mjs` from this directory
 - **Deploy after review:** `node .harness/deploy.mjs book-shop-022121007134254731280` from the
   workspace root
+- **Deployment:** `dpl_8GJUdnQEpfaSKtktT1HzzxY1JBaR`, READY in 5s
 - **Last verified:** 2026-11-13
 
 ## The 60-second path

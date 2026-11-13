@@ -15,12 +15,12 @@
       "description": "Folio & Co. customer storefront and operations desk: 14 public-domain classics with local public-domain cover scans and per-book credits, shelf and supplier availability, search and filters, book detail, bag and simulated checkout, route-aware order confirmation, ISBN-13 lookup, CSV catalog import with checksum and duplicate validation, inventory table, and a filterable order router. Stock is allocated on order and the UI recalculates.",
       "status": "done",
       "dependencies": [],
-      "evidence": "2026-11-13: node tests/run.mjs -> 13 passed, 0 failed, including a check that all 14 cover files exist and every book has a credit. node tests/smoke.mjs -> 2/2, cover JPEG served as image/jpeg. init.ps1 -> all 4 syntax checks clean. DOM smoke -> 14 image covers, cover credit, bag, checkout, router, scanner and 4-title import all responded with no client errors. GET / 200, GET /assets/covers/great-gatsby.jpg 200 image/jpeg. Workspace structural score 100/100.",
+      "evidence": "2026-11-13: node tests/run.mjs -> 13 passed, 0 failed, including a check that all 14 cover files exist and every book has a credit. node tests/smoke.mjs -> 2/2, cover JPEG served as image/jpeg. init.ps1 -> all 4 syntax checks clean. DOM smoke -> 14 image covers, cover credit, bag, checkout, router, scanner and 4-title import all responded with no client errors. Workspace structural score 100/100. Pushed to https://github.com/francisco-arturo/book-shop-022121007134254731280 and deployed at https://book-shop-022121007134254731280.vercel.app (dpl_8GJUdnQEpfaSKtktT1HzzxY1JBaR, READY in 5s). Live routes: / 200 19,622 bytes; CSS 200; app module 200; Gatsby cover 200 image/jpeg 141,709 bytes.",
       "done_criteria": [
         "Behavior implemented with public-domain classics and locally hosted public-domain covers",
         ".\\init.ps1 run and its output recorded in progress.md",
         "Every cover has a source credit and COVERS.md records the rights",
-        "DEMO.md records the review URL, click path and fake data"
+        "DEMO.md records the live URL, click path and fake data"
       ]
     }
   ]

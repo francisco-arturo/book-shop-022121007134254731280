@@ -2,8 +2,10 @@
 
 ## Current State
 
-- **Classic rebuild complete and verified locally on 2026-11-13.** Pending: push, deploy, highlight
-  entry, and proposal.
+- **Classic rebuild complete, pushed and deployed on 2026-11-13.** The proposal is drafted but not
+  sent. Remaining: final documentation commit.
+- Live URL: https://book-shop-022121007134254731280.vercel.app
+- Repository: https://github.com/francisco-arturo/book-shop-022121007134254731280 (main at `3956ffc`).
 - Folio & Co. is a seeded independent-bookshop storefront plus an operations desk, built as static
   HTML, CSS and ES modules.
 - The catalog now carries 14 public-domain classics: Austen, Melville, Brontë, Fitzgerald, Shelley,
@@ -26,14 +28,13 @@
 
 ## Current Objective
 
-Deploy the classic-edition build, record it in the highlighted projects list, and draft the proposal
-from the original Upwork listing.
+The build is live, the repository is pushed, the highlighted projects entry is in place and the
+proposal is drafted. Only the final documentation commit remains.
 
 ## Last Updated
 
 - **Last Updated**: 2026-11-13
-- **Recommended Next Step**: commit, push to the supplied repository, deploy, then complete the
-  highlight entry and proposal.
+- **Recommended Next Step**: commit the live-record documentation update.
 
 ## What Ran
 
@@ -46,6 +47,8 @@ from the original Upwork listing.
 | `Invoke-WebRequest http://127.0.0.1:4197/` | status 200, 19,622 bytes |
 | `Invoke-WebRequest .../assets/covers/great-gatsby.jpg` | status 200, `image/jpeg`, 357,587 bytes |
 | `node ..\.harness\validate.mjs --target . --min-score 70` | 100/100, threshold 70 |
+| `node .harness/deploy.mjs book-shop-022121007134254731280` | READY in 5s, 19 files, 2,031.9 kB, `dpl_8GJUdnQEpfaSKtktT1HzzxY1JBaR` |
+| Node fetch against the live alias | `/` 200 19,622 bytes, CSS 200 55,474 bytes, app module 200 34,360 bytes, Gatsby cover 200 `image/jpeg` 141,709 bytes, Pride cover 200 `image/jpeg` 292,123 bytes |
 
 ## Verification Evidence
 
@@ -61,12 +64,10 @@ from the original Upwork listing.
 
 ## Next
 
-1. Commit the classic rebuild.
-2. Push to `https://github.com/francisco-arturo/book-shop-022121007134254731280.git`.
-3. Deploy with `node .harness/deploy.mjs book-shop-022121007134254731280`, verify the live URL, and
-   update `DEMO.md`.
-4. Add the entry to `project-highlights.md`.
-5. Draft the proposal from the Upwork listing and run the kit checklist.
+1. Commit this documentation update.
+2. The proposal is at `upwork-kit/drafts/book-shop-022121007134254731280.md`; it passed the kit
+   checks and is not sent.
+3. If the user later asks for revisions, update that draft and re-run the checklist.
 
 ## Blockers
 
