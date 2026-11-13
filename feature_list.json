@@ -11,15 +11,15 @@
   "features": [
     {
       "id": "proto-001",
-      "name": "Online bookstore with an inventory engine, ISBN scanner, supplier catalog importer and order router that fulfils purchases from physical stock or supplier stock, plus a storefront and operations console on seeded demo data.",
-      "description": "Folio & Co. customer storefront and operations desk: seeded catalog with shelf and supplier availability, search and filters, book detail, bag and simulated checkout, route-aware order confirmation, ISBN-13 lookup, CSV catalog import with checksum and duplicate validation, inventory table, and a filterable order router. Stock is allocated on order and the UI recalculates.",
+      "name": "Public-domain classics bookstore with an inventory engine, ISBN scanner, supplier catalog importer and order router",
+      "description": "Folio & Co. customer storefront and operations desk: 14 public-domain classics with local public-domain cover scans and per-book credits, shelf and supplier availability, search and filters, book detail, bag and simulated checkout, route-aware order confirmation, ISBN-13 lookup, CSV catalog import with checksum and duplicate validation, inventory table, and a filterable order router. Stock is allocated on order and the UI recalculates.",
       "status": "done",
       "dependencies": [],
-      "evidence": "2026-11-13: node tests/run.mjs -> 12 passed, 0 failed. node tests/smoke.mjs -> ok 13, ok 14. init.ps1 -> all 4 syntax checks clean. DOM smoke -> catalog, bag, checkout, router, scanner and 4-title import all responded with no client errors. HTTP 200 on http://127.0.0.1:4197/. Workspace gate -> book-shop-022121007134254731280 scored 100/100. Local review handover only; not deployed.",
+      "evidence": "2026-11-13: node tests/run.mjs -> 13 passed, 0 failed, including a check that all 14 cover files exist and every book has a credit. node tests/smoke.mjs -> 2/2, cover JPEG served as image/jpeg. init.ps1 -> all 4 syntax checks clean. DOM smoke -> 14 image covers, cover credit, bag, checkout, router, scanner and 4-title import all responded with no client errors. GET / 200, GET /assets/covers/great-gatsby.jpg 200 image/jpeg. Workspace structural score 100/100.",
       "done_criteria": [
-        "Behavior implemented",
+        "Behavior implemented with public-domain classics and locally hosted public-domain covers",
         ".\\init.ps1 run and its output recorded in progress.md",
-        "Workspace gate green and the prototype registered",
+        "Every cover has a source credit and COVERS.md records the rights",
         "DEMO.md records the review URL, click path and fake data"
       ]
     }

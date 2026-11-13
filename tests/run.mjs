@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 import { seedBooks, seedOrders, sampleCsv } from "../assets/data.mjs";
 import {
@@ -17,6 +20,7 @@ import {
 } from "../assets/engine.mjs";
 
 const books = seedBooks.map((book) => ({ ...book }));
+const projectRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const failures = [];
 let passed = 0;
 
@@ -33,45 +37,57 @@ function test(name, fn) {
 }
 
 test("ISBN-13 checksums accept real barcodes and reject mistyped ones", () => {
-  assert.equal(isValidIsbn13("978-0-393-63552-2"), true);
-  assert.equal(isValidIsbn13("9781635575637"), true);
-  assert.equal(isValidIsbn13("9781635575638"), false);
+  assert.equal(isValidIsbn13("978-0-7432-7356-5"), true);
+  assert.equal(isValidIsbn13("9780743273565"), true);
+  assert.equal(isValidIsbn13("9780743273566"), false);
   assert.equal(isValidIsbn13("123"), false);
-  assert.equal(normaliseIsbn(" 978 1 63557 563 7 "), "9781635575637");
-  assert.equal(findBookByIsbn(books, "978-0-393-63552-2")?.title, "The Overstory");
+  assert.equal(normaliseIsbn(" 978 0 7432 7356 5 "), "9780743273565");
+  assert.equal(findBookByIsbn(books, "978-0-7432-7356-5")?.title, "The Great Gatsby");
+});
+
+test("every seeded classic has a valid ISBN, local cover image and credit", () => {
+  assert.equal(seedBooks.length, 14);
+  assert.equal(new Set(seedBooks.map((book) => book.isbn)).size, 14);
+  for (const book of seedBooks) {
+    assert.equal(isValidIsbn13(book.isbn), true, book.title);
+    assert.ok(book.coverImage, `${book.title} needs a cover image`);
+    assert.equal(existsSync(resolve(projectRoot, book.coverImage)), true, `${book.title} cover missing`);
+    assert.ok(book.coverCredit?.label, `${book.title} needs a cover credit`);
+    assert.ok(book.coverCredit?.url?.startsWith("https://commons.wikimedia.org/"), `${book.title} credit source`);
+  }
 });
 
 test("availability distinguishes shelf, low and supplier stock", () => {
-  assert.equal(availability(books.find((book) => book.id === "overstory")).key, "stock");
-  assert.equal(availability(books.find((book) => book.id === "lefthand")).key, "low");
-  assert.equal(availability(books.find((book) => book.id === "piranesi")).key, "supplier");
+  assert.equal(availability(books.find((book) => book.id === "pride")).key, "stock");
+  assert.equal(availability(books.find((book) => book.id === "hound")).key, "low");
+  assert.equal(availability(books.find((book) => book.id === "jane-eyre")).key, "supplier");
 });
 
 test("router sends shelf copies, supplier copies and partial lines to the right place", () => {
-  const [shelf] = routeOrder([{ bookId: "overstory", qty: 2 }], books);
+  const [shelf] = routeOrder([{ bookId: "pride", qty: 2 }], books);
   assert.equal(shelf.route, "STORE");
   assert.equal(shelf.fromStock, 2);
   assert.equal(shelf.fromSupplier, 0);
 
-  const [supplier] = routeOrder([{ bookId: "piranesi", qty: 1 }], books);
+  const [supplier] = routeOrder([{ bookId: "jane-eyre", qty: 1 }], books);
   assert.equal(supplier.route, "SUPPLIER");
   assert.equal(supplier.fromStock, 0);
   assert.equal(supplier.fromSupplier, 1);
   assert.equal(supplier.leadDays, 2);
 
-  const [split] = routeOrder([{ bookId: "lefthand", qty: 3 }], books);
+  const [split] = routeOrder([{ bookId: "hound", qty: 4 }], books);
   assert.equal(split.route, "SPLIT");
-  assert.equal(split.fromStock, 2);
+  assert.equal(split.fromStock, 3);
   assert.equal(split.fromSupplier, 1);
-  assert.equal(split.leadDays, 3);
+  assert.equal(split.leadDays, 4);
 });
 
 test("routing a multi-title order summarises each route", () => {
   const routed = routeOrder(
     [
-      { bookId: "overstory", qty: 1 },
-      { bookId: "piranesi", qty: 1 },
-      { bookId: "lefthand", qty: 3 },
+      { bookId: "pride", qty: 1 },
+      { bookId: "jane-eyre", qty: 1 },
+      { bookId: "hound", qty: 4 },
     ],
     books,
   );
@@ -85,47 +101,45 @@ test("routing a multi-title order summarises each route", () => {
 
 test("stock allocation only deducts shelf copies and never goes negative", () => {
   const after = allocateStock(books, [
-    { bookId: "overstory", fromStock: 2 },
-    { bookId: "lefthand", fromStock: 2 },
-    { bookId: "piranesi", fromStock: 0 },
+    { bookId: "pride", fromStock: 2 },
+    { bookId: "hound", fromStock: 3 },
+    { bookId: "jane-eyre", fromStock: 0 },
   ]);
-  assert.equal(after.find((book) => book.id === "overstory").stock, 4);
-  assert.equal(after.find((book) => book.id === "lefthand").stock, 0);
-  assert.equal(after.find((book) => book.id === "piranesi").stock, 0);
-  assert.equal(books.find((book) => book.id === "overstory").stock, 6);
+  assert.equal(after.find((book) => book.id === "pride").stock, 3);
+  assert.equal(after.find((book) => book.id === "hound").stock, 0);
+  assert.equal(after.find((book) => book.id === "jane-eyre").stock, 0);
+  assert.equal(books.find((book) => book.id === "pride").stock, 5);
 });
 
 test("cart totals include the selected shipping method and ignore tax", () => {
   const cart = [
-    { bookId: "overstory", qty: 2 },
-    { bookId: "piranesi", qty: 1 },
+    { bookId: "pride", qty: 2 },
+    { bookId: "jane-eyre", qty: 1 },
   ];
   const pickup = cartTotals(cart, books, "pickup");
   assert.equal(pickup.itemCount, 3);
-  assert.equal(pickup.subtotal, 54.9);
+  assert.equal(pickup.subtotal, 30.97);
   assert.equal(pickup.shipping, 0);
-  assert.equal(pickup.total, 54.9);
+  assert.equal(pickup.total, 30.97);
 
   const standard = cartTotals(cart, books, "standard");
   assert.equal(standard.shipping, 4.5);
-  assert.equal(standard.total, 59.4);
+  assert.equal(standard.total, 35.47);
 });
 
 test("catalog CSV parsing handles quoted commas and validates rows", () => {
-  const csv = `isbn,title,author,category,price,stock,supplier,lead_days,shelf,blurb
-9780062316097,"Sapiens: A Brief History of Humankind",Yuval Noah Harari,Essays,18.99,0,ingram,3,E-HAR,"A history, with a comma, in the blurb."
-9781635575637,Piranesi,Susanna Clarke,Fiction,17.00,0,bookazine,2,F-CLA,"A house of tides and statues."`;
-  const parsed = parseCatalogCsv(csv);
+  const parsed = parseCatalogCsv(sampleCsv);
   assert.equal(parsed.errors.length, 0);
-  assert.equal(parsed.records.length, 2);
-  assert.equal(parsed.records[0].blurb, "A history, with a comma, in the blurb.");
+  assert.equal(parsed.records.length, 4);
+  assert.equal(parsed.records[0].title, "The Scarlet Letter");
   assert.equal(parsed.records[1].supplier, "bookazine");
+  assert.match(parsed.records[0].blurb, /private letter/);
 });
 
 test("catalog parsing reports invalid checksums and unknown suppliers", () => {
   const csv = `isbn,title,author,category,price,stock,supplier,lead_days,shelf,blurb
-9781635575638,Bad barcode,Someone,Fiction,17.00,0,bookazine,2,F-BAD,"Broken checksum."
-9780062316097,Sapiens,Yuval Noah Harari,Essays,18.99,0,unknown,3,E-HAR,"Unknown supplier."`;
+9780743273566,Bad barcode,Someone,Fiction,15.00,0,bookazine,2,F-BAD,"Broken checksum."
+9780141439518,Pride and Prejudice,Jane Austen,Fiction,9.99,0,unknown,3,F-AUS,"Unknown supplier."`;
   const parsed = parseCatalogCsv(csv);
   assert.equal(parsed.records.length, 0);
   assert.equal(parsed.errors.length, 2);
@@ -133,7 +147,7 @@ test("catalog parsing reports invalid checksums and unknown suppliers", () => {
   assert.match(parsed.errors[1].message, /Unknown supplier/);
 });
 
-test("catalog import adds new titles and skips duplicates", () => {
+test("catalog import adds new classics and skips duplicates", () => {
   const first = importCatalog(sampleCsv, books);
   assert.equal(first.added.length, 4);
   assert.equal(first.skipped.length, 0);

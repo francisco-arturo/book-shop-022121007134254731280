@@ -26,10 +26,15 @@ try {
   assert.equal(app.status, 200);
   assert.match(app.headers.get("content-type") ?? "", /javascript/);
 
+  const cover = await fetch(`${base}/assets/covers/great-gatsby.jpg`);
+  assert.equal(cover.status, 200);
+  assert.match(cover.headers.get("content-type") ?? "", /image\/jpeg/);
+  assert.ok((await cover.arrayBuffer()).byteLength > 10000, "cover image should be served");
+
   const missing = await fetch(`${base}/does-not-exist`);
   assert.equal(missing.status, 404);
 
-  console.log(`ok 13 - local server returns the app shell, CSS and JS (${base})`);
+  console.log(`ok 13 - local server returns the app shell, CSS, JS and a cover image (${base})`);
   console.log(`ok 14 - unknown routes return 404`);
 } finally {
   await new Promise((resolve) => server.close(resolve));

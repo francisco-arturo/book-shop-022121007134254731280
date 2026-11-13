@@ -19,8 +19,7 @@ import {
 } from "./engine.mjs";
 
 const state = {
-  books: seedBooks.map((book) => ({ ...book, cover: { ...book.cover } })),
-  cart: [],
+  books: seedBooks.map((book) => ({ ...book, cover: { ...book.cover } })),  cart: [],
   orders: seedOrders.map((order) => ({ ...order, lines: order.lines.map((line) => ({ ...line })) })),
   filters: { query: "", category: "All", sort: "curated", staffOnly: false },
   shipping: "pickup",
@@ -225,7 +224,7 @@ function handleDocumentClick(event) {
       }, 120);
       break;
     case "sample-scan":
-      els.scanInput.value = "9781635575637";
+      els.scanInput.value = "9780141441146";
       handleScan();
       break;
     case "reset-sample":
@@ -252,7 +251,7 @@ function renderAll() {
 }
 
 function renderHero() {
-  const book = state.books.find((candidate) => candidate.id === "overstory") ?? state.books[0];
+  const book = state.books.find((candidate) => candidate.id === "great-gatsby") ?? state.books[0];
   if (book) {
     els.featuredBook.innerHTML = `
       <button class="cover-button" type="button" data-action="open-book" data-book-id="${escapeAttr(book.id)}" aria-label="View ${escapeAttr(book.title)}">
@@ -543,6 +542,11 @@ function openBook(bookId) {
           <div class="spec"><span>Supplier</span><strong>${escapeHtml(supplier?.name ?? "—")}</strong></div>
           <div class="spec"><span>Lead time</span><strong>${getLeadDays(book)} days</strong></div>
         </div>
+        ${
+          book.coverCredit
+            ? `<p class="cover-credit">Cover image: <a href="${escapeAttr(book.coverCredit.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(book.coverCredit.label)}</a></p>`
+            : ""
+        }
         <div class="book-buy">
           <span class="book-buy-price">${formatMoney(book.price)}</span>
           <button class="button button-primary" type="button" data-action="add-book" data-book-id="${escapeAttr(book.id)}">
@@ -859,6 +863,13 @@ function showToast(message) {
 const toast = showToast;
 
 function coverHtml(book, variant = "") {
+  if (book.coverImage) {
+    return `
+      <div class="book-cover book-cover--image ${variant}" style="--cover:${escapeAttr(book.cover.bg)}" aria-hidden="true">
+        <img class="cover-image" src="${escapeAttr(book.coverImage)}" alt="" loading="lazy" decoding="async" style="object-position:${escapeAttr(book.coverPosition ?? "center")}">
+      </div>`;
+  }
+
   const titleClass = book.title.length > 22 ? "is-long" : "";
   return `
     <div class="book-cover ${variant} motif-${escapeAttr(book.cover.motif)}" style="--cover:${escapeAttr(book.cover.bg)};--ink:${escapeAttr(book.cover.ink)};--accent:${escapeAttr(book.cover.accent)}" aria-hidden="true">
