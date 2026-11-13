@@ -1,0 +1,7 @@
+.qa/
+.vercel/
+node_modules/
+dev-server.mjs
+tests/
+.harness/
+*.md
